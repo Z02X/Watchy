@@ -21,16 +21,11 @@
 
 RTC_DATA_ATTR SExpandedData g_data;
 
-CWatchyExpanded::CWatchyExpanded() : m_display(GxEPD2_154_D67(wcd::cs, wcd::dc, wcd::reset, wcd::busy)), m_data(g_data)
+CWatchyExpanded::CWatchyExpanded() : m_display(GxEPD2_154_D67(wcd::kCS, wcd::kDC, wcd::kReset, wcd::kBusy)), m_data(g_data)
 {
-	AddWatchFace(new CTimeWatchFace);
-	AddWatchFace(new CDateWatchFace);
+	AddWatchFace<CTimeWatchFace>();
+	AddWatchFace<CDateWatchFace>();
 	AddApp(new CSyncNTP(*this));
-}
-
-void CWatchyExpanded::AddWatchFace(CWatchFace* pFace)
-{
-	m_faces.push_back(pFace);
 }
 
 void CWatchyExpanded::AddApp(CWatchyApp* pApp)
@@ -106,7 +101,7 @@ void CWatchyExpanded::Init()
 
 void CWatchyExpanded::DisplayBusyCallback(const void*)
 {
-	gpio_wakeup_enable(static_cast<gpio_num_t>(wcd::busy), GPIO_INTR_LOW_LEVEL);
+	gpio_wakeup_enable(static_cast<gpio_num_t>(wcd::kBusy), GPIO_INTR_LOW_LEVEL);
 	esp_sleep_enable_gpio_wakeup();
 	esp_light_sleep_start();
 }
@@ -114,7 +109,7 @@ void CWatchyExpanded::DisplayBusyCallback(const void*)
 void CWatchyExpanded::UpdateScreen(const bool partial_update)
 {
 	m_display.setFullWindow();
-	m_faces[m_data.m_face % m_faces.size()]->Draw(*this);
+	m_faces[m_data.m_face % m_faces.size()]->Get()->Draw(*this);
 	m_display.display(partial_update); //partial refresh
 	m_data.m_guiState = SExpandedData::guiState::face;
 }

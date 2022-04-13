@@ -1,5 +1,11 @@
 #pragma once
 
+// C++
+#include <cstdint>
+
+// ES32
+#include <driver\gpio.h>
+
 //wifi
 #define WIFI_AP_TIMEOUT 60
 #define WIFI_AP_SSID "Watchy AP"
@@ -33,14 +39,14 @@ namespace watchy_config
 namespace display
 {
 // Display
-#define DISPLAY_WIDTH 200
-#define DISPLAY_HEIGHT 200
+constexpr std::int16_t kDisplayWidth{200};
+constexpr std::int16_t kDisplayHeight{200};
 
 // display pins
-constexpr std::uint8_t cs{5}; // Unsure what this means.
-constexpr std::uint8_t dc{10}; // Unsure what this means.
-constexpr std::uint8_t reset{9};
-constexpr std::uint8_t busy{19};
+constexpr std::uint8_t kCS{5}; // Unsure what this means.
+constexpr std::uint8_t kDC{10}; // Unsure what this means.
+constexpr std::uint8_t kReset{9};
+constexpr std::uint8_t kBusy{19};
 };
 
 namespace pins

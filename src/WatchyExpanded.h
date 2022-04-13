@@ -14,6 +14,7 @@
 
 // Expanded
 #include "watchy_config.h"
+#include "WatchFace.h"
 
 // Defs
 class CWatchFace;
@@ -40,7 +41,12 @@ class CWatchyExpanded
 
 		CWatchyExpanded();
 
-		void AddWatchFace(CWatchFace* pFace);
+		template <typename T>
+		void AddWatchFace()
+		{
+			m_faces.push_back(new CWatchFaceHolder<T>());
+		}
+
 		void AddApp(CWatchyApp* pApp);
 		void Init();
 		void Run();
@@ -68,8 +74,8 @@ class CWatchyExpanded
 		void _bmaConfig();
 		static uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
 
-		std::vector<CWatchFace*> m_faces;
-		std::vector<CWatchyApp*> m_apps;
+		std::vector<CWatchFaceHolderBase*> m_faces;
+		std::vector<CWatchyApp*>           m_apps;
 
 		ADisplay m_display;
 		tmElements_t m_currentTime;

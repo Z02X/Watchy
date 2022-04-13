@@ -1,7 +1,6 @@
 #include "WatchyRTC.h"
 
-WatchyRTC::WatchyRTC()
-	: rtc_ds(false) {}
+WatchyRTC::WatchyRTC() : rtc_ds(false) {}
 
 void WatchyRTC::init()
 {
