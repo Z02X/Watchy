@@ -1,6 +1,6 @@
 {
   "name": "WatchyExpanded",
-  "version": "1.4.0",
+  "version": "2022.4.10.15",
   "description": "Watchy - An Open Source E-Paper Watch by SQFMI",
   "authors": [
     {
@@ -11,7 +11,7 @@
   "homepage": "https://watchy.sqfmi.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sqfmi/Watchy.git"
+    "url": "https://github.com/Z02X/Watchy.git"
   },
   "frameworks": "arduino",
   "platforms": ["espressif32"],
@@ -20,6 +20,8 @@
     { "name": "Arduino_JSON" },
     { "name": "DS3232RTC" },
     { "name": "NTPClient" },
+    { "name": "ESP32 BLE Arduino" },
+    { "name": "Adafruit BusIO" },
     {
       "name": "Rtc_Pcf8563",
       "version": "https://github.com/orbitalair/Rtc_Pcf8563.git#master"

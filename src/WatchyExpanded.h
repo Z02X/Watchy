@@ -1,85 +1,81 @@
 #pragma once
 
-#include <Arduino.h>
-#include <WiFiManager.h>
-#include <HTTPClient.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-#include <Arduino_JSON.h>
+// STL
+#include <vector>
+
+// GxEPD2
 #include <GxEPD2_BW.h>
-#include <Wire.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include "DSEG7_Classic_Bold_53.h"
+
+// Time
+#include <TimeLib.h>
+
+// Watchy
 #include "WatchyRTC.h"
-#include "BLE.h"
-#include "bma.h"
-#include "config.h"
 
-typedef struct weatherData{
-	int8_t temperature;
-	int16_t weatherConditionCode;
-	bool isMetric;
-	String weatherDescription;
-}weatherData;
+// Expanded
+#include "watchy_config.h"
 
-typedef struct watchySettings{
-	//Weather Settings
-	String cityID;
-	String weatherAPIKey;
-	String weatherURL;
-	String weatherUnit;
-	String weatherLang;
-	int8_t weatherUpdateInterval;
-	//NTP Settings
-	String ntpServer;
-	int gmtOffset;
-	int dstOffset;
-} watchySettings;
+// Defs
+class CWatchFace;
+class CWatchyApp;
 
-class WatchyExpanded
+struct SExpandedData
 {
-	public:
-		static WatchyRTC RTC;
-		static GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
-		tmElements_t currentTime;
-		watchySettings settings;
-	public:
-		explicit WatchyExpanded(const watchySettings& s) : settings(s){} //constructor
-		void init(String datetime = "");
-		void deepSleep();
-		static void displayBusyCallback(const void*);
-		float getBatteryVoltage();
-		void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
+	bool m_init = true;
+	std::uint8_t m_face = 0;
 
-		void handleButtonPress();
-		void showMenu(byte menuIndex, bool partialRefresh);
-		void showFastMenu(byte menuIndex);
-		void showAbout();
-		void showBuzz();
-		void showAccelerometer();
-		void showUpdateFW();
-		void showSyncNTP();
-		bool syncNTP();
-		bool syncNTP(long gmt, int dst, String ntpServer);
-		void setTime();
-		void setupWifi();
-		bool connectWiFi();
-		weatherData getWeatherData();
-		weatherData getWeatherData(String cityID, String units, String lang, String url, String apiKey, uint8_t updateInterval);
-		void updateFWBegin();
+	enum guiState : std::uint8_t
+	{
+		face,
+		menu
+	} m_guiState = guiState::face;
 
-		void showWatchFace(bool partialRefresh);
-		virtual void drawWatchFace(); //override this method for different watch faces
-
-	private:
-		void _bmaConfig();
-		static void _configModeCallback(WiFiManager *myWiFiManager);
-		static uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
-		static uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
+	std::uint8_t m_menuItem = 0;
 };
 
-extern RTC_DATA_ATTR int guiState;
-extern RTC_DATA_ATTR int menuIndex;
-extern RTC_DATA_ATTR BMA423 sensor;
-extern RTC_DATA_ATTR bool WIFI_CONFIGURED;
-extern RTC_DATA_ATTR bool BLE_CONFIGURED;
+class CWatchyExpanded
+{
+	public:
+		using ADisplay = GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT>;
+
+		CWatchyExpanded();
+
+		void AddWatchFace(CWatchFace* pFace);
+		void AddApp(CWatchyApp* pApp);
+		void Init();
+		void Run();
+
+		bool ConnectWiFi();
+
+		ADisplay& Display();
+		WatchyRTC& RTC();
+		tmElements_t& Time();
+		float BatteryVoltage();
+
+	private:
+		static void DisplayBusyCallback(const void*);
+
+		void UpdateScreen(const bool fullUpdate);
+		void DeepSleep();
+
+		void HandleButtonPress();
+
+		void BackFace();
+		void ForwardFace();
+
+		void Menu();
+
+		void _bmaConfig();
+		static uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
+
+		std::vector<CWatchFace*> m_faces;
+		std::vector<CWatchyApp*> m_apps;
+
+		ADisplay m_display;
+		tmElements_t m_currentTime;
+
+		WatchyRTC m_rtc;
+		SExpandedData& m_data;
+		bool m_UpdateWatchFace = false;
+		//BMA423 m_sensor;
+};
