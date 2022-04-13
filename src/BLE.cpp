@@ -1,5 +1,8 @@
 #include "BLE.h"
 
+// Expanded
+#include "watchy_config.h"
+
 #define SERVICE_UUID_ESPOTA       "cd77498e-1ac8-48b6-aba8-4161c7342fce"
 #define CHARACTERISTIC_UUID_ID    "cd77498f-1ac8-48b6-aba8-4161c7342fce"
 
@@ -93,7 +96,7 @@ BLE::~BLE(void)
 
 //
 // begin
-bool BLE::begin(const char* localName = "Watchy BLE OTA") {
+bool BLE::begin(const char* localName = "WatchyExpanded BLE OTA") {
   // Create the BLE Device
   BLEDevice::init(localName);
 
@@ -139,7 +142,7 @@ bool BLE::begin(const char* localName = "Watchy BLE OTA") {
 
   uint8_t hardwareVersion[5] = {HARDWARE_VERSION_MAJOR, HARDWARE_VERSION_MINOR, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH};
   pVersionCharacteristic->setValue((uint8_t*)hardwareVersion, 5);
-  pWatchFaceNameCharacteristic->setValue("Watchy 7 Segment");
+  pWatchFaceNameCharacteristic->setValue("WatchyExpanded 7 Segment");
 
   return true;
 }
@@ -148,6 +151,7 @@ int BLE::updateStatus(){
   return status;
 }
 
-int BLE::howManyBytes(){
+int BLE::howManyBytes()
+{
   return bytesReceived;
 }
