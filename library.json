@@ -23,6 +23,9 @@
     { "name": "Time" },
     { "name": "Rtc_Pcf8563" },
     { "name": "NTPClient" },
-    { "name": "SmallRTC" }
+    {
+      "name": "SmallRTC",
+      "version": "https://github.com/Z02X/SmallRTC.git"
+    }
   ]
 }
