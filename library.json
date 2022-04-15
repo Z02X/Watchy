@@ -21,6 +21,7 @@
     { "name": "Adafruit GFX Library" },
     { "name": "DS3232RTC" },
     { "name": "Time" },
-    { "name": "Rtc_Pcf8563" }
+    { "name": "Rtc_Pcf8563" },
+    { "name": "NTPClient" }
   ]
 }
