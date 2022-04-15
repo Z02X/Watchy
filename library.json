@@ -20,6 +20,7 @@
     { "name": "GxEPD2" },
     { "name": "Adafruit GFX Library" },
     { "name": "DS3232RTC" },
-    { "name": "Time" }
+    { "name": "Time" },
+    { "name": "Rtc_Pcf8563" }
   ]
 }
