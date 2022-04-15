@@ -1,6 +1,6 @@
 {
   "name": "WatchyExpanded",
-  "version": "2022.5.2",
+  "version": "2022.5.3",
   "description": "Watchy - An Open Source E-Paper Watch by SQFMI",
   "authors": [
     {
@@ -19,16 +19,15 @@
   [
     { "name": "GxEPD2" },
     { "name": "Adafruit GFX Library" },
-    {
-      "name": "DS3232RTC",
-      "version" : "https://github.com/JChristensen/DS3232RTC.git"
-    },
-    { "name": "Time" },
     { "name": "Rtc_Pcf8563" },
     { "name": "NTPClient" },
     {
       "name": "SmallRTC",
       "version": "https://github.com/Z02X/SmallRTC.git"
+    },
+    {
+      "name": "DS3232RTC",
+      "version" : "https://github.com/JChristensen/DS3232RTC.git"
     }
   ]
 }
