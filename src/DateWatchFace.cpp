@@ -25,11 +25,13 @@ void CDateWatchFace::StartDraw(CWatchyExpanded::ADisplay& display)
 void CDateWatchFace::DrawInternal(CWatchyExpanded& expanded)
 {
 	CWatchyExpanded::ADisplay& display = expanded.Display();
-	tmElements_t& time                 = expanded.Time();
+	tmElements_t& time           = expanded.Time();
 
 	m_currentLocalTime.tm_wday = time.Wday - 1;
 	m_currentLocalTime.tm_year = time.Year + 1970 - 1900;
 	m_currentLocalTime.tm_mon  = time.Month - 1;
+	//if (m_currentLocalTime.tm_mon == -1)
+	//	m_currentLocalTime.tm_mon = 0;
 	m_currentLocalTime.tm_mday = time.Day;
 
 	char buffer[32];

@@ -22,6 +22,7 @@
     { "name": "DS3232RTC" },
     { "name": "Time" },
     { "name": "Rtc_Pcf8563" },
-    { "name": "NTPClient" }
+    { "name": "NTPClient" },
+    { "name": "SmallRTC" }
   ]
 }
