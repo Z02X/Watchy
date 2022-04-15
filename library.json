@@ -1,10 +1,10 @@
 {
   "name": "WatchyExpanded",
-  "version": "2022.5.a",
+  "version": "2022.5",
   "description": "Watchy - An Open Source E-Paper Watch by SQFMI",
   "authors": [
     {
-      "name": "SQFMI",
+      "name": "Michael-Paul Moore",
       "url": "https://github.com/sqfmi"
     }
   ],
@@ -19,6 +19,7 @@
   [
     { "name": "GxEPD2" },
     { "name": "Adafruit GFX Library" },
+    { "name": "DS3232RTC" },
     { "name": "Time" }
   ]
 }

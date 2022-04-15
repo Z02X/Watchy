@@ -4,6 +4,9 @@
 // Fonts
 #include <Fonts/FreeMonoBold9pt7b.h>
 
+// Time
+#include <TimeLib.h>
+
 void CTimeWatchFace::Draw(CWatchyExpanded& expanded)
 {
 	CWatchyExpanded::ADisplay& display = expanded.Display();
