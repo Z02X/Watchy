@@ -1,13 +1,7 @@
-#ifndef WATCHY_RTC_H
-#define WATCHY_RTC_H
+#pragma once
 
 #include <DS3232RTC.h>
 #include <Rtc_Pcf8563.h>
-#include "config.h"
-#include "time.h"
-
-#define YEAR_OFFSET_DS 1970
-#define YEAR_OFFSET_PCF 2000
 
 class CExpandedRTC
 {
@@ -31,5 +25,3 @@ class CExpandedRTC
 		DS3232RTC rtc_ds;
 		Rtc_Pcf8563 rtc_pcf;
 };
-
-#endif

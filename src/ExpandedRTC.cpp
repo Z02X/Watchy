@@ -1,6 +1,9 @@
 // Self
 #include "ExpandedRTC.h"
 
+// Time
+#include <TimeLib.h>
+
 constexpr uint16_t rtcDS_addr{0x68};
 constexpr uint16_t rtcPCF_addr{0x51};
 
@@ -8,16 +11,13 @@ CExpandedRTC::CExpandedRTC() {}
 
 void CExpandedRTC::ClearAlarm()
 {
-	if(GetRTCType() == DS3231)
+	if(GetRTCType() == ERTCType::DS3231)
 	{
 		rtc_ds.alarm(DS3232RTC::ALARM_2);
 	}
-	else if (GetRTCType() == PCF8563)
+	else if (GetRTCType() == ERTCType::PCF8563)
 	{
 		rtc_pcf.clearAlarm(); //resets the alarm flag in the RTC
-		int nextAlarmMinute = rtc_pcf.getMinute();
-		nextAlarmMinute = (nextAlarmMinute == 59) ? 0 : (nextAlarmMinute + 1); //set alarm to trigger 1 minute from now
-		rtc_pcf.setAlarm(nextAlarmMinute, 99, 99, 99);
 	}
 }
 
@@ -41,7 +41,7 @@ void CExpandedRTC::Read(tmElements_t &tm)
 	{
 		rtc_ds.read(tm);
 	}
-	else if (GetRTCType() ==PCF8563)
+	else if (GetRTCType() == ERTCType::PCF8563)
 	{
 		tm.Year = y2kYearToTm(rtc_pcf.getYear());
 		tm.Month = rtc_pcf.getMonth();
@@ -56,12 +56,12 @@ void CExpandedRTC::Read(tmElements_t &tm)
 
 void CExpandedRTC::Set(tmElements_t& tm)
 {
-	if(GetRTCType() == DS3231)
+	if(GetRTCType() == ERTCType::DS3231)
 	{
 		time_t t = makeTime(tm);
 		rtc_ds.set(t);
 	}
-	else if (GetRTCType() == PCF8563)
+	else if (GetRTCType() == ERTCType::PCF8563)
 	{
 		time_t t = makeTime(tm); //make and break to calculate tm.Wday
 		breakTime(t, tm);
@@ -91,7 +91,7 @@ uint8_t CExpandedRTC::CExpandedRTC::GetRTCType()
 			controlReg &= ~mask;
 			rtc_ds.writeRTC(0x0E, controlReg);
 		}
-		m_rtcType =ERTCType::DS3231;
+		m_rtcType = ERTCType::DS3231;
 	}
 	else
 	{
