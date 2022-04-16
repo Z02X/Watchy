@@ -25,10 +25,6 @@
       "version": "https://github.com/orbitalair/Rtc_Pcf8563.git#master"
     },
     {
-      "name": "SmallRTC",
-      "version": "https://github.com/Z02X/SmallRTC.git"
-    },
-    {
       "name": "DS3232RTC",
       "version" : "https://github.com/JChristensen/DS3232RTC.git"
     }

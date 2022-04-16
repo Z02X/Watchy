@@ -43,35 +43,28 @@ void CWatchyExpanded::Run()
 	//Init();
 	m_display.epd2.setBusyCallback(DisplayBusyCallback);
 
+	bool bPartialRefresh = true;
 	switch (wakeup_reason)
 	{
 		case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
-			Serial.write("ESP_SLEEP_WAKEUP_EXT0\n");
 			if(m_data.m_guiState == SExpandedData::guiState::face)
-			{
-				Serial.write("SExpandedData::guiState::face\n");
 				m_UpdateWatchFace = true;
-			}
 		break;
 		case ESP_SLEEP_WAKEUP_EXT1: //button Press
-			Serial.write("ESP_SLEEP_WAKEUP_EXT1\n");
 			HandleButtonPress();
 		break;
 		default: //reset
-			Serial.write("reset\n");
-			m_rtc.init();
-			m_rtc.setDateTime("2022:04:15:8:22:00");
-			m_rtc.read(m_currentTime);
 			m_UpdateWatchFace = true;
+			bPartialRefresh = false;
 		break;
 	}
 
 	if (m_UpdateWatchFace)
 	{
-		m_rtc.resetWake();
-		m_rtc.read(m_currentTime);
-		UpdateScreen(true);
+		m_rtc.Read(m_currentTime);
+		UpdateScreen(bPartialRefresh);
 	}
+
 	DeepSleep();
 }
 
@@ -80,7 +73,7 @@ CWatchyExpanded::ADisplay& CWatchyExpanded::Display()
 	return m_display;
 }
 
-SmallRTC& CWatchyExpanded::RTC()
+CExpandedRTC& CWatchyExpanded::RTC()
 {
 	return m_rtc;
 }
@@ -128,15 +121,13 @@ void CWatchyExpanded::DeepSleep()
 {
 	m_display.hibernate();
 	m_data.m_init = false;
-	//m_rtc.resetWake(); // resets the alarm flag in the RTC
 
 	for(int i = 0; i < 40; ++i) // Set pins 0-39 to input to avoid power leaking out
 		pinMode(i, INPUT);
 
 	esp_sleep_enable_ext0_wakeup(wcp::rtc_pin, 0); //enable deep sleep wake on RTC interrupt
 	esp_sleep_enable_ext1_wakeup(wcp::btn_pin_mask, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
-	m_rtc.nextMinuteWake();
-	Serial.write("Entering Depp Sleep\n");
+	m_rtc.NextMinuteWake();
 	esp_deep_sleep_start();
 }
 

@@ -11,7 +11,7 @@
 #include <WiFi.h>
 
 // Watchy
-#include "WatchyRTC.h"
+#include "ExpandedRTC.h"
 
 // NTP
 #include <NTPClient.h>
@@ -62,7 +62,7 @@ bool CSyncNTP::SyncNTP(const long gmt, const String& ntpServer)
 		return false; //NTP sync failed
 	tmElements_t tm;
 	breakTime((time_t)timeClient.getEpochTime(), tm);
-	m_expanded.RTC().set(tm);
+	m_expanded.RTC().Set(tm);
 
 	return true;
 }

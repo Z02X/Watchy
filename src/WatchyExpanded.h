@@ -12,9 +12,7 @@
 // Expanded
 #include "watchy_config.h"
 #include "WatchFace.h"
-
-// GuruSR
-#include <SmallRTC.h>
+#include <ExpandedRTC.h>
 
 // Defs
 class CWatchFace;
@@ -54,7 +52,7 @@ class CWatchyExpanded
 		bool ConnectWiFi();
 
 		ADisplay& Display();
-		SmallRTC& RTC();
+		CExpandedRTC& RTC();
 		tmElements_t& Time();
 		float BatteryVoltage();
 
@@ -80,7 +78,7 @@ class CWatchyExpanded
 		ADisplay m_display;
 		tmElements_t m_currentTime;
 
-		SmallRTC m_rtc;
+		CExpandedRTC m_rtc;
 		SExpandedData& m_data;
 		bool m_UpdateWatchFace = false;
 		//BMA423 m_sensor;
