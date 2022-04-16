@@ -9,12 +9,12 @@
 // Time
 #include <TimeLib.h>
 
-// Watchy
-#include "WatchyRTC.h"
-
 // Expanded
 #include "watchy_config.h"
 #include "WatchFace.h"
+
+// GuruSR
+#include <SmallRTC.h>
 
 // Defs
 class CWatchFace;
@@ -54,7 +54,7 @@ class CWatchyExpanded
 		bool ConnectWiFi();
 
 		ADisplay& Display();
-		WatchyRTC& RTC();
+		SmallRTC& RTC();
 		tmElements_t& Time();
 		float BatteryVoltage();
 
@@ -80,7 +80,7 @@ class CWatchyExpanded
 		ADisplay m_display;
 		tmElements_t m_currentTime;
 
-		WatchyRTC m_rtc;
+		SmallRTC m_rtc;
 		SExpandedData& m_data;
 		bool m_UpdateWatchFace = false;
 		//BMA423 m_sensor;

@@ -32,7 +32,7 @@ void WatchyRTC::clearAlarm()
 {
 	if(rtcType == DS3231)
 	{
-		rtc_ds.alarm(ALARM_2);
+		rtc_ds.alarm(DS3232RTC::ALARM_2);
 	}
 	else
 	{
@@ -93,9 +93,9 @@ void WatchyRTC::_DSConfig(String datetime){ //String datetime is YYYY:MM:DD:HH:M
 		rtc_ds.set(t);
 	}
 	//https://github.com/JChristensen/DS3232RTC
-	rtc_ds.squareWave(SQWAVE_NONE); //disable square wave output
-	rtc_ds.setAlarm(ALM2_EVERY_MINUTE, 0, 0, 0, 0); //alarm wakes up Watchy every minute
-	rtc_ds.alarmInterrupt(ALARM_2, true); //enable alarm interrupt
+	rtc_ds.squareWave(DS3232RTC::SQWAVE_NONE); //disable square wave output
+	rtc_ds.setAlarm(DS3232RTC::ALM2_EVERY_MINUTE, 0, 0, 0, 0); //alarm wakes up Watchy every minute
+	rtc_ds.alarmInterrupt(DS3232RTC::ALARM_2, true); //enable alarm interrupt
 }
 
 void WatchyRTC::_PCFConfig(String datetime){ //String datetime is YYYY:MM:DD:HH:MM:SS

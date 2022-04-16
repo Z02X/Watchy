@@ -37,7 +37,6 @@ void CWatchyExpanded::Run()
 {
 	const esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason
 	Wire.begin(SDA, SCL); //init i2c
-	m_rtc.init();
 
 	// Init the display here for all cases, if unused, it will do nothing
 	m_display.init(0, m_data.m_init, 10, true); // 10ms by spec, and fast pulldown reset
@@ -47,20 +46,31 @@ void CWatchyExpanded::Run()
 	switch (wakeup_reason)
 	{
 		case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
+			Serial.write("ESP_SLEEP_WAKEUP_EXT0\n");
 			if(m_data.m_guiState == SExpandedData::guiState::face)
+			{
+				Serial.write("SExpandedData::guiState::face\n");
 				m_UpdateWatchFace = true;
+			}
 		break;
 		case ESP_SLEEP_WAKEUP_EXT1: //button Press
+			Serial.write("ESP_SLEEP_WAKEUP_EXT1\n");
 			HandleButtonPress();
 		break;
 		default: //reset
-			m_rtc.config("");
+			Serial.write("reset\n");
+			m_rtc.init();
+			m_rtc.setDateTime("2022:04:15:8:22:00");
+			m_rtc.read(m_currentTime);
+			m_UpdateWatchFace = true;
 		break;
 	}
+
 	if (m_UpdateWatchFace)
 	{
+		m_rtc.resetWake();
 		m_rtc.read(m_currentTime);
-		UpdateScreen(true); // full update
+		UpdateScreen(true);
 	}
 	DeepSleep();
 }
@@ -70,7 +80,7 @@ CWatchyExpanded::ADisplay& CWatchyExpanded::Display()
 	return m_display;
 }
 
-WatchyRTC& CWatchyExpanded::RTC()
+SmallRTC& CWatchyExpanded::RTC()
 {
 	return m_rtc;
 }
@@ -118,13 +128,15 @@ void CWatchyExpanded::DeepSleep()
 {
 	m_display.hibernate();
 	m_data.m_init = false;
-	m_rtc.clearAlarm(); // resets the alarm flag in the RTC
+	//m_rtc.resetWake(); // resets the alarm flag in the RTC
 
 	for(int i = 0; i < 40; ++i) // Set pins 0-39 to input to avoid power leaking out
 		pinMode(i, INPUT);
 
 	esp_sleep_enable_ext0_wakeup(wcp::rtc_pin, 0); //enable deep sleep wake on RTC interrupt
 	esp_sleep_enable_ext1_wakeup(wcp::btn_pin_mask, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
+	m_rtc.nextMinuteWake();
+	Serial.write("Entering Depp Sleep\n");
 	esp_deep_sleep_start();
 }
 
@@ -197,10 +209,9 @@ uint16_t CWatchyExpanded::_readRegister(uint8_t address, uint8_t reg, uint8_t *d
 	return 0;
 }
 
-float CWatchyExpanded::BatteryVoltage()
+float CWatchyExpanded::BatteryVoltage() // TODO Check for bug on watchy main
 {
-	if(m_rtc.rtcType == DS3231)
-		return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f; // Battery voltage goes through a 1/2 divider.
-	else
-		return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f;
+	//if(m_rtc.rtcType == DS3231)
+	//	return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f; // Battery voltage goes through a 1/2 divider.
+	return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f;
 }

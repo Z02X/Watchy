@@ -1,6 +1,6 @@
 {
   "name": "WatchyExpanded",
-  "version": "2022.5.3",
+  "version": "2022.5.4",
   "description": "Watchy - An Open Source E-Paper Watch by SQFMI",
   "authors": [
     {
@@ -19,8 +19,11 @@
   [
     { "name": "GxEPD2" },
     { "name": "Adafruit GFX Library" },
-    { "name": "Rtc_Pcf8563" },
     { "name": "NTPClient" },
+    {
+      "name": "Rtc_Pcf8563",
+      "version": "https://github.com/orbitalair/Rtc_Pcf8563.git#master"
+    },
     {
       "name": "SmallRTC",
       "version": "https://github.com/Z02X/SmallRTC.git"

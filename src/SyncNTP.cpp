@@ -32,11 +32,11 @@ void CSyncNTP::Work()
 	display.setTextColor(GxEPD_WHITE);
 	display.setCursor(0, 10);
 	display.println("Syncing NTP...");
-	display.display(false); //full refresh
+	display.display(true);
 
 	if(m_expanded.ConnectWiFi())
 	{
-		if (!SyncNTP(3600 * -7, 3600, "pool.ntp.org"))
+		if (!SyncNTP(3600 * -7, "pool.ntp.org"))
 			display.println("Failed to Sync NTP!");
 		else
 			display.println("Synced to NTP!");
@@ -49,12 +49,11 @@ void CSyncNTP::Work()
 		display.println("WiFi Not Configured.");
 	}
 
-	display.display(true); //full refresh
-	delay(3000);
+	display.display(true);
 }
 
 //NTP sync - call after connecting to WiFi and remember to turn it back off
-bool CSyncNTP::SyncNTP(long gmt, int dst, String ntpServer)
+bool CSyncNTP::SyncNTP(const long gmt, const String& ntpServer)
 { 
 	WiFiUDP ntpUDP;
 	NTPClient timeClient(ntpUDP, ntpServer.c_str(), gmt);
@@ -64,5 +63,6 @@ bool CSyncNTP::SyncNTP(long gmt, int dst, String ntpServer)
 	tmElements_t tm;
 	breakTime((time_t)timeClient.getEpochTime(), tm);
 	m_expanded.RTC().set(tm);
+
 	return true;
 }

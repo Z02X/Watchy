@@ -11,6 +11,6 @@ class CSyncNTP : public CWatchyApp
 		void        Work()       override;
 
 	private:
-		bool SyncNTP(long gmt, int dst, String ntpServer);
+		bool SyncNTP(const long gmt, const String& ntpServer);
 };
 
