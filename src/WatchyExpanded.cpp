@@ -43,6 +43,8 @@ void CWatchyExpanded::Run()
 	//Init();
 	m_display.epd2.setBusyCallback(DisplayBusyCallback);
 
+	Serial.write("CWatchyExpanded::Run");
+
 	bool bPartialRefresh = true;
 	switch (wakeup_reason)
 	{

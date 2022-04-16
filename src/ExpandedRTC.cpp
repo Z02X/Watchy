@@ -31,7 +31,8 @@ void CExpandedRTC::NextMinuteWake()
 	else if (GetRTCType() == ERTCType::PCF8563)
 	{
 		rtc_pcf.clearAlarm(); //resets the alarm flag in the RTC
-		rtc_pcf.setAlarm(constrain((rtc_pcf.getMinute() + 1), 0, 59), 99, 99, 99);
+		const byte NextMin = (rtc_pcf.getMinute() + 1) % 60;
+		rtc_pcf.setAlarm(NextMin, 99, 99, 99);
 	}
 }
 

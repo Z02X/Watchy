@@ -22,7 +22,7 @@
     { "name": "NTPClient" },
     {
       "name": "Rtc_Pcf8563",
-      "version": "https://github.com/elpaso/Rtc_Pcf8563.git#master"
+      "version": "https://github.com/orbitalair/Rtc_Pcf8563.git#master"
     },
     {
       "name": "DS3232RTC",
