@@ -9,12 +9,11 @@
 
 void CTimeWatchFace::Draw(CWatchyExpanded& expanded)
 {
-	CWatchyExpanded::ADisplay& display = expanded.Display();
-	StartDraw(display);
+	StartDraw(expanded.Display());
 	DrawInternal(expanded);
 };
 
-void CTimeWatchFace::StartDraw(CWatchyExpanded::ADisplay& display)
+void CTimeWatchFace::StartDraw(CWatchyExpanded::ADisplay& display) const
 {
 	display.setFullWindow();
 	display.fillScreen(GxEPD_BLACK);
@@ -25,13 +24,10 @@ void CTimeWatchFace::StartDraw(CWatchyExpanded::ADisplay& display)
 void CTimeWatchFace::DrawInternal(CWatchyExpanded& expanded)
 {
 	CWatchyExpanded::ADisplay& display = expanded.Display();
-	const tmElements_t& time = expanded.Time();
-	m_currentLocalTime.tm_hour = time.Hour;
-	m_currentLocalTime.tm_min  = time.Minute;
-	m_currentLocalTime.tm_sec  = time.Second;
+	const std::tm& time = expanded.Time();
 
 	display.print("Time: ");
 	char buffer[20];
-	strftime(buffer, sizeof(buffer), "%I:%M %p", &m_currentLocalTime);
+	strftime(buffer, sizeof(buffer), "%I:%M %p", &time);
 	display.println(buffer);
 };

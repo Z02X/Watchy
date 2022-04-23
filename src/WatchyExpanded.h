@@ -2,6 +2,7 @@
 
 // STL
 #include <vector>
+#include <ctime>
 
 // GxEPD2
 #include <GxEPD2_BW.h>
@@ -12,7 +13,7 @@
 // Expanded
 #include "watchy_config.h"
 #include "WatchFace.h"
-#include <ExpandedRTC.h>
+#include "ExpandedRTC.h"
 
 // Defs
 class CWatchFace;
@@ -53,7 +54,7 @@ class CWatchyExpanded
 
 		ADisplay& Display();
 		CExpandedRTC& RTC();
-		tmElements_t& Time();
+		tm& Time();
 		float BatteryVoltage();
 
 	private:
@@ -76,7 +77,7 @@ class CWatchyExpanded
 		std::vector<CWatchyApp*>           m_apps;
 
 		ADisplay m_display;
-		tmElements_t m_currentTime;
+		std::tm m_Time; // Follow the cpp standard first and others after.
 
 		CExpandedRTC m_rtc;
 		SExpandedData& m_data;

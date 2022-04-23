@@ -43,18 +43,12 @@ void CWatchyExpanded::Run()
 	//Init();
 	m_display.epd2.setBusyCallback(DisplayBusyCallback);
 
-	Serial.write("CWatchyExpanded::Run");
-
 	bool bPartialRefresh = true;
 	switch (wakeup_reason)
 	{
 		case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
-			Serial.write("ESP_SLEEP_WAKEUP_EXT0");
 			if(m_data.m_guiState == SExpandedData::guiState::face)
-			{
-				Serial.write("SExpandedData::guiState::face");
 				m_UpdateWatchFace = true;
-			}
 		break;
 		case ESP_SLEEP_WAKEUP_EXT1: //button Press
 			HandleButtonPress();
@@ -66,11 +60,7 @@ void CWatchyExpanded::Run()
 	}
 
 	if (m_UpdateWatchFace)
-	{
-		m_rtc.Read(m_currentTime);
 		UpdateScreen(bPartialRefresh);
-	}
-
 	DeepSleep();
 }
 
@@ -84,9 +74,10 @@ CExpandedRTC& CWatchyExpanded::RTC()
 	return m_rtc;
 }
 
-tmElements_t& CWatchyExpanded::Time()
+tm& CWatchyExpanded::Time()
 {
-	return m_currentTime;
+	m_rtc.Read(m_Time);
+	return m_Time;
 }
 
 bool CWatchyExpanded::ConnectWiFi()
@@ -128,10 +119,11 @@ void CWatchyExpanded::DeepSleep()
 	m_display.hibernate();
 	m_data.m_init = false;
 
-	for(int i = 0; i < 40; ++i) // Set pins 0-39 to input to avoid power leaking out
+	m_rtc.NextMinuteWake();
+
+	for(int i = 0; i < 40; ++i) // Set pins 0-39 to input to avoid power leaking out, may reset interface to RTC
 		pinMode(i, INPUT);
 
-	m_rtc.NextMinuteWake();
 	esp_sleep_enable_ext0_wakeup(wcp::rtc_pin, 0); //enable deep sleep wake on RTC interrupt
 	esp_sleep_enable_ext1_wakeup(wcp::btn_pin_mask, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
 	esp_deep_sleep_start();

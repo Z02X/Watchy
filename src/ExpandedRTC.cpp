@@ -11,11 +11,12 @@ CExpandedRTC::CExpandedRTC() {}
 
 void CExpandedRTC::ClearAlarm()
 {
-	if(GetRTCType() == ERTCType::DS3231)
+	const ERTCType rctType = GetRTCType();
+	if(rctType == ERTCType::DS3231)
 	{
 		rtc_ds.alarm(DS3232RTC::ALARM_2);
 	}
-	else if (GetRTCType() == ERTCType::PCF8563)
+	else if (rctType == ERTCType::PCF8563)
 	{
 		rtc_pcf.clearAlarm(); //resets the alarm flag in the RTC
 	}
@@ -23,46 +24,54 @@ void CExpandedRTC::ClearAlarm()
 
 void CExpandedRTC::NextMinuteWake()
 {
-	if (GetRTCType() == ERTCType::DS3231)
+	const ERTCType rctType = GetRTCType();
+	if (rctType == ERTCType::DS3231)
 	{
 		rtc_ds.setAlarm(DS3232RTC::ALARM_TYPES_t::ALM2_EVERY_MINUTE, 0, 0, 0, 0); //alarm wakes up Watchy every minute
 		rtc_ds.clearAlarm(DS3232RTC::ALARM_NBR_t::ALARM_2); //resets the alarm flag in the RTC
 	}
-	else if (GetRTCType() == ERTCType::PCF8563)
+	else if (rctType == ERTCType::PCF8563)
 	{
-		rtc_pcf.clearAlarm(); //resets the alarm flag in the RTC
 		const byte NextMin = (rtc_pcf.getMinute() + 1) % 60;
+		rtc_pcf.clearAlarm(); //resets the alarm flag in the RTC
 		rtc_pcf.setAlarm(NextMin, 99, 99, 99);
 	}
 }
 
-void CExpandedRTC::Read(tmElements_t &tm)
+void CExpandedRTC::Read(std::tm &time)
 {
-	if(GetRTCType() == ERTCType::DS3231)
+	const ERTCType rctType = GetRTCType();
+	if(rctType == ERTCType::DS3231) // Needs testing
 	{
+		// DS3231 has Wday range of 1-7
+		tmElements_t tm;
 		rtc_ds.read(tm);
+		const std::time_t epocTime = makeTime(tm);
+		time = *localtime(&epocTime);
+		//time = *gmtime(&epocTime);
 	}
-	else if (GetRTCType() == ERTCType::PCF8563)
+	else if (rctType == ERTCType::PCF8563)
 	{
-		tm.Year = y2kYearToTm(rtc_pcf.getYear());
-		tm.Month = rtc_pcf.getMonth();
-		tm.Day = rtc_pcf.getDay();
-		//TimeLib & DS3231 has Wday range of 1-7, but PCF8563 stores day of week in 0-6 range
-		tm.Wday = rtc_pcf.getWeekday() + 1;
-		tm.Hour = rtc_pcf.getHour();
-		tm.Minute = rtc_pcf.getMinute();
-		tm.Second = rtc_pcf.getSecond();
+		time.tm_sec = rtc_pcf.getSecond();
+		time.tm_min = rtc_pcf.getMinute();
+		time.tm_hour = rtc_pcf.getHour();
+		time.tm_mday = rtc_pcf.getDay();
+		time.tm_mon = rtc_pcf.getMonth() - 1; // PCF8563 stores month 1-12
+		time.tm_year = 100 + rtc_pcf.getYear(); // PCF8563 year starts on 2000
+		time.tm_wday = rtc_pcf.getWeekday(); // PCF8563 stores day of week in 0-6 range
 	}
+	time.tm_isdst = -1; // Boo DST, but in all seriousness this needs to be resolved
 }
 
 void CExpandedRTC::Set(tmElements_t& tm)
 {
-	if(GetRTCType() == ERTCType::DS3231)
+	const ERTCType rctType = GetRTCType();
+	if(rctType == ERTCType::DS3231)
 	{
 		time_t t = makeTime(tm);
 		rtc_ds.set(t);
 	}
-	else if (GetRTCType() == ERTCType::PCF8563)
+	else if (rctType == ERTCType::PCF8563)
 	{
 		time_t t = makeTime(tm); //make and break to calculate tm.Wday
 		breakTime(t, tm);
@@ -77,7 +86,7 @@ void CExpandedRTC::Set(tmElements_t& tm)
 	ClearAlarm();
 }
 
-uint8_t CExpandedRTC::CExpandedRTC::GetRTCType()
+CExpandedRTC::ERTCType CExpandedRTC::CExpandedRTC::GetRTCType()
 {
 	if (m_rtcType != ERTCType::Unknown)
 		return m_rtcType;
