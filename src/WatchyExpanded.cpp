@@ -1,17 +1,13 @@
 #include "WatchyExpanded.h"
 
+// Expanded
+#include "WatchyApp.h"
+
 // ESP
 #include <esp_sleep.h>
 
 // Wire
 #include <Wire.h>
-
-// Faces
-#include "TimeWatchFace.h"
-#include "DateWatchFace.h"
-
-// Apps
-#include "SyncNTP.h"
 
 // Fonts
 #include <Fonts/FreeMonoBold9pt7b.h>
@@ -21,17 +17,8 @@
 
 RTC_DATA_ATTR SExpandedData g_data;
 
-CWatchyExpanded::CWatchyExpanded() : m_display(GxEPD2_154_D67(wcd::kCS, wcd::kDC, wcd::kReset, wcd::kBusy)), m_data(g_data)
-{
-	AddWatchFace<CTimeWatchFace>();
-	AddWatchFace<CDateWatchFace>();
-	AddApp(new CSyncNTP(*this));
-}
-
-void CWatchyExpanded::AddApp(CWatchyApp* pApp)
-{
-	m_apps.push_back(pApp);
-}
+CWatchyExpanded::CWatchyExpanded() : m_display(GxEPD2_154_D67(wcd::kCS, wcd::kDC, wcd::kReset, wcd::kBusy)),
+                                     m_data(g_data) {}
 
 void CWatchyExpanded::Run()
 {
@@ -80,10 +67,10 @@ tm& CWatchyExpanded::Time()
 	return m_Time;
 }
 
-bool CWatchyExpanded::ConnectWiFi()
+bool CWatchyExpanded::ConnectWiFi() // TODO: Move to service
 {
 	//WiFi not setup, you can also use hard coded credentials with WiFi.begin(SSID,PASS);
-	if(wl_status_t::WL_CONNECT_FAILED == WiFi.begin())
+	if (wl_status_t::WL_CONNECT_FAILED == WiFi.begin())
 		return false;
 
 	WiFi.waitForConnectResult();
@@ -150,8 +137,18 @@ void CWatchyExpanded::HandleButtonPress()
 		}
 		else if (kWakeupBit & wcp::menu_btn_mask)
 		{
-			m_apps[m_data.menu % m_apps.size()]->Work();
+			m_apps[m_data.m_menuItem % m_apps.size()]->Get()->Work(*this);
 		}
+		else if (kWakeupBit & wcp::up_btn_mask)
+		{
+			--m_data.m_menuItem;
+		}
+		else if (kWakeupBit & wcp::down_btn_mask)
+		{
+			++m_data.m_menuItem;
+		}
+
+		Menu();
 	}
 }
 
@@ -160,10 +157,29 @@ void CWatchyExpanded::Menu()
 	m_display.setFullWindow();
 	m_display.fillScreen(GxEPD_BLACK);
 	m_display.setFont(&FreeMonoBold9pt7b);
-	m_display.setCursor(0, 15);
+	m_display.setCursor(0, 16);
 
-	for (const CWatchyApp* pApp : m_apps)
-		m_display.println(pApp->Name());
+	const std::size_t Size = m_apps.size();
+	for (std::size_t i = 0; i < Size; ++i)
+	{
+		CHolderBase<CWatchyApp>* pApp = m_apps[i];
+		const char* const Name = pApp->Get()->Name();
+		m_display.setCursor(m_display.getCursorX() + 1, m_display.getCursorY());
+		if (m_data.m_menuItem % Size == i)
+		{
+			int16_t boundaryX, boundaryY;
+			uint16_t w, h;
+			m_display.getTextBounds(Name, m_display.getCursorX(), m_display.getCursorY(), &boundaryX, &boundaryY, &w, &h);
+			m_display.setTextColor(GxEPD_BLACK);
+			m_display.fillRect(boundaryX-1, boundaryY-1, w+2, h+2, GxEPD_WHITE);
+		}
+		else
+		{
+			m_display.setTextColor(GxEPD_WHITE);
+		}
+
+		m_display.println(Name);
+	}
 	m_data.m_guiState = SExpandedData::guiState::menu;
 	m_display.display(true);
 }

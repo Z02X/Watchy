@@ -14,6 +14,7 @@
 #include "watchy_config.h"
 #include "WatchFace.h"
 #include "ExpandedRTC.h"
+#include "Holder.h"
 
 // Defs
 class CWatchFace;
@@ -43,10 +44,15 @@ class CWatchyExpanded
 		template <typename T>
 		void AddWatchFace()
 		{
-			m_faces.push_back(new CWatchFaceHolder<T>());
+			m_faces.push_back(new CHolder<T, CWatchFace>);
 		}
 
-		void AddApp(CWatchyApp* pApp);
+		template <typename T>
+		void AddApp()
+		{
+			m_apps.push_back(new CHolder<T, CWatchyApp>);
+		}
+
 		void Init();
 		void Run();
 
@@ -73,11 +79,11 @@ class CWatchyExpanded
 		void _bmaConfig();
 		static uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
 
-		std::vector<CWatchFaceHolderBase*> m_faces;
-		std::vector<CWatchyApp*>           m_apps;
+		std::vector<CHolderBase<CWatchFace>*> m_faces;
+		std::vector<CHolderBase<CWatchyApp>*> m_apps;
 
 		ADisplay m_display;
-		std::tm m_Time; // Follow the cpp standard first and others after.
+		std::tm  m_Time; // Follow the cpp standard first and others after.
 
 		CExpandedRTC m_rtc;
 		SExpandedData& m_data;
