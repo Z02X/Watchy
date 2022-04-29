@@ -41,6 +41,14 @@ class CWatchyExpanded
 
 		CWatchyExpanded();
 
+		enum EButtons : std::uint8_t
+		{
+			Confirm,
+			Deny,
+			Progress, // Follows reading direction.
+			Regress   // Follows reading direction.
+		};
+
 		template <typename T>
 		void AddWatchFace()
 		{
@@ -62,6 +70,7 @@ class CWatchyExpanded
 		CExpandedRTC& RTC();
 		tm& Time();
 		float BatteryVoltage();
+		bool IsButtonPressed(const EButtons button) const;
 
 	private:
 		static void DisplayBusyCallback(const void*);
