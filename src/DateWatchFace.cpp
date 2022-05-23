@@ -12,6 +12,7 @@ void CDateWatchFace::Draw(CWatchyExpanded& expanded)
 	StartDraw(expanded.Display());
 	CTimeWatchFace::DrawInternal(expanded);
 	DrawInternal(expanded);
+	expanded.Display().display(true);
 }
 
 void CDateWatchFace::StartDraw(CWatchyExpanded::ADisplay& display)

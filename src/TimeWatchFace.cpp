@@ -11,7 +11,7 @@ void CTimeWatchFace::Draw(CWatchyExpanded& expanded)
 {
 	StartDraw(expanded.Display());
 	DrawInternal(expanded);
-};
+}
 
 void CTimeWatchFace::StartDraw(CWatchyExpanded::ADisplay& display) const
 {
@@ -19,7 +19,7 @@ void CTimeWatchFace::StartDraw(CWatchyExpanded::ADisplay& display) const
 	display.fillScreen(GxEPD_BLACK);
 	display.setFont(&FreeMonoBold9pt7b);
 	display.setCursor(0, 15);
-};
+}
 
 void CTimeWatchFace::DrawInternal(CWatchyExpanded& expanded)
 {
@@ -30,4 +30,4 @@ void CTimeWatchFace::DrawInternal(CWatchyExpanded& expanded)
 	char buffer[20];
 	strftime(buffer, sizeof(buffer), "%I:%M %p", &time);
 	display.println(buffer);
-};
+}

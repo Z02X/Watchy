@@ -11,5 +11,3 @@ class CWatchFace
 		CWatchFace() = default;
 		virtual void Draw(CWatchyExpanded& expanded) = 0; //override this method for different watch faces
 };
-
-

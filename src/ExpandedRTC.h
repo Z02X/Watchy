@@ -6,6 +6,7 @@
 
 // STL
 #include <ctime>
+#include <cstdint>
 
 class CExpandedRTC
 {

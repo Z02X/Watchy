@@ -27,10 +27,8 @@ void CWatchyExpanded::Run()
 
 	// Init the display here for all cases, if unused, it will do nothing
 	m_display.init(0, m_data.m_init, 10, true); // 10ms by spec, and fast pulldown reset
-	//Init();
 	m_display.epd2.setBusyCallback(DisplayBusyCallback);
 
-	bool bPartialRefresh = true;
 	switch (wakeup_reason)
 	{
 		case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
@@ -42,12 +40,12 @@ void CWatchyExpanded::Run()
 		break;
 		default: //reset
 			m_UpdateWatchFace = true;
-			bPartialRefresh = false;
+			m_bPartialRefresh = false;
 		break;
 	}
 
 	if (m_UpdateWatchFace)
-		UpdateScreen(bPartialRefresh);
+		UpdateScreen();
 	DeepSleep();
 }
 
@@ -69,7 +67,7 @@ tm& CWatchyExpanded::Time()
 
 bool CWatchyExpanded::ConnectWiFi() // TODO: Move to service
 {
-	//WiFi not setup, you can also use hard coded credentials with WiFi.begin(SSID,PASS);
+	//WiFi not setup.
 	if (wl_status_t::WL_CONNECT_FAILED == WiFi.begin())
 		return false;
 
@@ -93,12 +91,12 @@ void CWatchyExpanded::DisplayBusyCallback(const void*)
 	esp_light_sleep_start();
 }
 
-void CWatchyExpanded::UpdateScreen(const bool partial_update)
+void CWatchyExpanded::UpdateScreen()
 {
 	m_display.setFullWindow();
 	m_faces[m_data.m_face % m_faces.size()]->Get()->Draw(*this);
-	m_display.display(partial_update); //partial refresh
 	m_data.m_guiState = SExpandedData::guiState::face;
+	m_display.display(m_bPartialRefresh);
 }
 
 void CWatchyExpanded::DeepSleep()
@@ -214,9 +212,16 @@ uint16_t CWatchyExpanded::_readRegister(uint8_t address, uint8_t reg, uint8_t *d
 	return 0;
 }
 
-float CWatchyExpanded::BatteryVoltage() // TODO Check for bug on watchy main
+float BatteryCharge() // TODO Check for bug on watchy main
 {
 	//if(m_rtc.rtcType == DS3231)
 	//	return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f; // Battery voltage goes through a 1/2 divider.
-	return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f;
+	return analogReadMilliVolts(wcp::batt_adc_pin) / 1000.0f * 2.0f / 4.1f;
+}
+
+std::string CWatchyExpanded::GetValue(const std::string& value)
+{
+	if (value == "BatteryCharge")
+		return std::to_string(BatteryCharge());
+	return {};
 }

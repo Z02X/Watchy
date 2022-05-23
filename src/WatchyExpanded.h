@@ -3,6 +3,7 @@
 // STL
 #include <vector>
 #include <ctime>
+#include <string>
 
 // GxEPD2
 #include <GxEPD2_BW.h>
@@ -69,13 +70,13 @@ class CWatchyExpanded
 		ADisplay& Display();
 		CExpandedRTC& RTC();
 		tm& Time();
-		float BatteryVoltage();
+		std::string GetValue(const std::string& value);
 		bool IsButtonPressed(const EButtons button) const;
 
 	private:
 		static void DisplayBusyCallback(const void*);
 
-		void UpdateScreen(const bool fullUpdate);
+		void UpdateScreen();
 		void DeepSleep();
 
 		void HandleButtonPress();
@@ -97,5 +98,6 @@ class CWatchyExpanded
 		CExpandedRTC m_rtc;
 		SExpandedData& m_data;
 		bool m_UpdateWatchFace = false;
+		bool m_bPartialRefresh = true;
 		//BMA423 m_sensor;
 };
